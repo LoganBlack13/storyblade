@@ -7,10 +7,16 @@
   aria-label="Sidenav"
 >
   <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-    <div class="font-bold text-xl text-center p-2 mb-4">
-      StoryBlade
+    <div class="font-bold text-xl flex justify-center items-center p-2 mb-4 text-gray-900 dark:text-white">
+      <img
+        class="w-16"
+        src="{{ Vite::asset('resources/images/storyblade-logo.png') }}" alt="storyblade-logo"
+      >
+      <span>
+       StoryBlade
+      </span>
     </div>
-    <h1 class="font-bold">{{ __('Components') }}</h1>
+    <h1 class="font-bold text-gray-900 dark:text-white">{{ __('Components') }}</h1>
     <ul class="space-y-2">
       @foreach($components as $name => $component)
         @php
