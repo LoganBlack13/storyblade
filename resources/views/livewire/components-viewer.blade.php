@@ -199,16 +199,35 @@
     dark:bg-gray-900 dark:border-gray-600 dark:text-white block-canvas p-10 grid grid-cols-2 gap-2"
   >
     <div>
-      <x-dynamic-component :component="$currentComponent">
-        My button
-      </x-dynamic-component>
+      {!! $dynamicComponent !!}
     </div>
-    <div>
-      @foreach($props as $prop => $values)
-        <div class="my-2">
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label for="slot">Slot content</label>
+      </div>
+      <div>
+        <textarea
+          wire:model.live.debounce="slot"
+          name="slot"
+          >
+        </textarea>
+      </div>
+      @foreach($availableProps as $prop => $values)
+        <div>
           <label for="{{ $prop }}">{{ $prop }}</label>
-          @foreach($values as $value)
-              <button class="py-1 px-2 mx-2 bg-blue-500 text-white rounded">{{ $value }}</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          @foreach($values as $value => $state)
+            <button
+              @class([
+                'py-1 px-2 mx-2 rounded',
+                'bg-blue-500 text-white' => $state,
+                'bg-white border border-blue-500 text-blue-500' => !$state
+              ])
+              wire:click="updateProps('{{ $prop }}', '{{$value}}')"
+            >
+              {{ $value }}
+            </button>
           @endforeach
         </div>
       @endforeach

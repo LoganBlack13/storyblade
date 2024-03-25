@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -12,22 +13,28 @@ class ComponentsViewer extends Component
   public array $items = [];
   public string $componentGroupLabel;
   public string $currentComponent = '';
+  public array $props = [];
+  public array $selectedProps = [];
+  public ?string $slot = null;
 
-  public function boot(): void
+  public function mount(): void
   {
     $this->items = $this->componentGroup['items'];
     $this->currentComponent = $this->items[0];
     $this->componentGroupLabel = $this->componentGroup['label'];
+    $bladeComponentPath = $this->getBladeComponentFilePath($this->currentComponent);
+    $bladeComponentProps = $this->extractPropertiesFromBladeComponentFile($bladeComponentPath);
+    $this->generateDefaultProps($bladeComponentProps);
   }
 
   public function render(): View
   {
-    $bladeComponentPath = $this->getBladeComponentFilePath($this->currentComponent);
-    $bladeComponentProps = $this->extractPropertiesFromBladeComponentFile($bladeComponentPath);
 
+    $render = Blade::render('components.button.index', array_merge(['slot'=> $this->slot ?? "default"], $this->props));
     return view('livewire.components-viewer', [
       'items' => $this->items,
-      'props' => $bladeComponentProps
+      'availableProps' => $this->selectedProps,
+      'dynamicComponent' => $render
     ]);
   }
 
@@ -61,5 +68,29 @@ class ComponentsViewer extends Component
     }
 
     return null;
+  }
+
+  private function generateDefaultProps(array $bladeComponentProps): void
+  {
+    foreach ($bladeComponentProps as $bladeComponentProp => $values){
+      foreach ($values as $key => $value){
+        $this->selectedProps[$bladeComponentProp][$value] = $key === 0;
+        if($key === 0){
+          $this->props[$bladeComponentProp] = $value;
+        }
+      }
+    }
+  }
+
+  public function updateProps(string $props, $value): void
+  {
+    $this->selectedProps[$props][$value] = true;
+    if($value === 'false'){
+      $value = false;
+    }
+    if($value === 'true'){
+      $value = true;
+    }
+    $this->props[$props] = $value;
   }
 }
