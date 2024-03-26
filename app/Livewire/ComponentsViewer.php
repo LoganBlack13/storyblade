@@ -30,7 +30,7 @@ class ComponentsViewer extends Component
   public function render(): View
   {
 
-    $render = Blade::render('components.button.index', array_merge(['slot'=> $this->slot ?? "default"], $this->props));
+    $render = Blade::render('components.'.$this->currentComponent, array_merge(['slot'=> $this->slot ?? "default"], $this->props));
     return view('livewire.components-viewer', [
       'items' => $this->items,
       'availableProps' => $this->selectedProps,
@@ -40,7 +40,11 @@ class ComponentsViewer extends Component
 
   public function changeCurrentComponent($component): void
   {
+    $this->reset('props');
     $this->currentComponent = $component;
+    $bladeComponentPath = $this->getBladeComponentFilePath($this->currentComponent);
+    $bladeComponentProps = $this->extractPropertiesFromBladeComponentFile($bladeComponentPath);
+    $this->generateDefaultProps($bladeComponentProps);
   }
 
   function extractPropertiesFromBladeComponentFile($bladeFilePath): array
@@ -72,6 +76,7 @@ class ComponentsViewer extends Component
 
   private function generateDefaultProps(array $bladeComponentProps): void
   {
+    $this->reset('selectedProps');
     foreach ($bladeComponentProps as $bladeComponentProp => $values){
       foreach ($values as $key => $value){
         $this->selectedProps[$bladeComponentProp][$value] = $key === 0;
@@ -82,8 +87,19 @@ class ComponentsViewer extends Component
     }
   }
 
+  function clearProp(array &$prop): void
+  {
+    foreach ($prop as &$value) {
+      if (is_array($value)) {
+        $this->clearProp($value);
+      }
+      $value = false;
+    }
+  }
+
   public function updateProps(string $props, $value): void
   {
+    $this->clearProp($this->selectedProps[$props]);
     $this->selectedProps[$props][$value] = true;
     if($value === 'false'){
       $value = false;

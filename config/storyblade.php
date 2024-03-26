@@ -9,7 +9,9 @@ return [
       'items' => [
         'button.index',
         'button.primary',
-        'button.secondary'
+        'button.secondary',
+        'button.warning',
+        'button.danger'
       ]
     ],
     'card' => [

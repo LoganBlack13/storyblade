@@ -15,7 +15,7 @@
   'iconPosition' => 'left',
 ])
 <x-button
-  color="gray"
+  color="red"
   :size="$size"
   :icon="$icon"
   :rounded="$rounded"

@@ -1,3 +1,12 @@
+@php
+  $properties = [
+    'icon' => [ 'true', 'false'],
+    'size' => [ 'xs', 's', 'm', 'lg', 'xl'],
+    'rounded' => ['none', 'normal', 'full'],
+    'outlined' => ['true', 'false'],
+    'iconPosition' => ['left', 'right']
+  ];
+@endphp
 @props([
   'size' => 'm',
   'icon' => false,
